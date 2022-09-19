@@ -12,6 +12,9 @@ states:
       commands:
       - command: csvjson out/instance/out.csv
       convert: data.xlsx
+    files:
+    - key: data.xlsx
+      scope: workflow
   transition: state1
 - id: state1
   type: action
@@ -21,3 +24,6 @@ states:
       commands:
       - command: csvcut -c 1 out/instance/out.csv
       convert: data.xlsx
+    files:
+    - key: data.xlsx
+      scope: workflow

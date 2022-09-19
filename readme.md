@@ -31,7 +31,7 @@ functions:
   type: action
   action:
     function: csvkit
-    file: 
+    files: 
     - key: data.xlsx
       scope: workflow
     input: 
@@ -45,7 +45,7 @@ functions:
   type: action
   action:
     function: csvkit
-    file: 
+    files: 
     - key: data.xlsx
       scope: workflow
     input: 

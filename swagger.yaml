@@ -105,7 +105,7 @@ paths:
               type: action
               action:
                 function: csvkit
-                file: 
+                files: 
                 - key: data.xlsx
                   scope: workflow
                 input: 
@@ -118,7 +118,7 @@ paths:
               type: action
               action:
                 function: csvkit
-                file: 
+                files: 
                 - key: data.xlsx
                   scope: workflow
                 input: 

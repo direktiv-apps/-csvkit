@@ -196,11 +196,11 @@ func init() {
         },
         "x-direktiv-examples": [
           {
-            "content": "- id: csvkit\n  type: action\n  action:\n    function: csvkit\n    file: \n    - key: data.xlsx\n      scope: workflow\n    input: \n      convert: data.xlsx\n      commands:\n      - command: csvjson out/instance/out.csv",
+            "content": "- id: csvkit\n  type: action\n  action:\n    function: csvkit\n    files: \n    - key: data.xlsx\n      scope: workflow\n    input: \n      convert: data.xlsx\n      commands:\n      - command: csvjson out/instance/out.csv",
             "title": "Basic"
           },
           {
-            "content": "- id: csvkit\n  type: action\n  action:\n    function: csvkit\n    file: \n    - key: data.xlsx\n      scope: workflow\n    input: \n      convert: data.xlsx\n      commands:\n      - command: csvcut -c 1 out/instance/out.csv",
+            "content": "- id: csvkit\n  type: action\n  action:\n    function: csvkit\n    files: \n    - key: data.xlsx\n      scope: workflow\n    input: \n      convert: data.xlsx\n      commands:\n      - command: csvcut -c 1 out/instance/out.csv",
             "title": "Advanced"
           }
         ],
@@ -366,11 +366,11 @@ func init() {
         },
         "x-direktiv-examples": [
           {
-            "content": "- id: csvkit\n  type: action\n  action:\n    function: csvkit\n    file: \n    - key: data.xlsx\n      scope: workflow\n    input: \n      convert: data.xlsx\n      commands:\n      - command: csvjson out/instance/out.csv",
+            "content": "- id: csvkit\n  type: action\n  action:\n    function: csvkit\n    files: \n    - key: data.xlsx\n      scope: workflow\n    input: \n      convert: data.xlsx\n      commands:\n      - command: csvjson out/instance/out.csv",
             "title": "Basic"
           },
           {
-            "content": "- id: csvkit\n  type: action\n  action:\n    function: csvkit\n    file: \n    - key: data.xlsx\n      scope: workflow\n    input: \n      convert: data.xlsx\n      commands:\n      - command: csvcut -c 1 out/instance/out.csv",
+            "content": "- id: csvkit\n  type: action\n  action:\n    function: csvkit\n    files: \n    - key: data.xlsx\n      scope: workflow\n    input: \n      convert: data.xlsx\n      commands:\n      - command: csvcut -c 1 out/instance/out.csv",
             "title": "Advanced"
           }
         ],
