@@ -1,0 +1,200 @@
+swagger: "2.0"
+info:
+  description: CSVKit to covert from and to CSV
+  title: csvkit
+  version: "1.0"
+  x-direktiv-meta:
+    container: gcr.io/direktiv/functions/csvkit
+    maintainer: |-
+      [direktiv.io](https://www.direktiv.io) 
+    issues: https://github.com/direktiv-apps/csvkit/issues
+    url: https://github.com/direktiv-apps/csvkit  
+    categories:
+    - misc
+    - docs
+    license: |-
+      [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0)
+    long-description: >-
+      CSVKit is a suite of utilities for converting to and working with CSV. Version 1.0.7 is installed for this function.
+      All available command are installed and can be looked up [here](https://csvkit.readthedocs.io/en/latest/index.html). 
+
+      This function can run a list of commands but additionally accepts a `convert` property which can point to a file. 
+      This file will be converted to CSV and stored in Direktiv's instance scope. This file can be accessed via `out/instance/out.csv`.
+consumes:
+- application/json
+produces:
+- application/json
+schemes:
+- http
+paths:
+  /: 
+    delete:
+      parameters:
+        - name: Direktiv-ActionID
+          in: header
+          type: string
+          description: |
+            On cancel Direktiv sends a DELETE request to
+            the action with id in the header
+      x-direktiv:
+        cancel: echo 'cancel {{ .DirektivActionID }}'
+      responses:
+        200:
+    post:
+      parameters:
+        - name: Direktiv-ActionID
+          in: header
+          type: string
+          default: development
+          description: |
+            direktiv action id is an UUID. 
+            For development it can be set to 'development'
+        - name: Direktiv-TempDir
+          in: header
+          type: string
+          default: /tmp
+          description: |
+            direktiv temp dir is the working directory for that request
+            For development it can be set to e.g. '/tmp'
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              files:
+                type: array
+                items:
+                  $ref: '#/definitions/direktivFile'
+                description: File to create before running commands.
+                default: []
+              convert:
+                type: string
+                description: converts incoming file and stores it under instance context.
+              commands:
+                type: array
+                description: Array of commands.
+                items:
+                  type: object
+                  properties:
+                    command:
+                      type: string
+                      description: Command to run
+                    silent: 
+                      type: boolean
+                      description: If set to false the command will not print output to logs.
+                      default: false
+                    print: 
+                      type: boolean
+                      description: If set to false the command will not print the full command with arguments to logs.
+                      default: true
+                    continue: 
+                      type: boolean
+                      description: Stops excecution if command fails, otherwise proceeds with next command 
+                default: 
+                - command: echo Hello
+      # direktiv code generation is configured here
+      x-direktiv-function: |-
+        functions:
+        - id: csvkit
+          image: gcr.io/direktiv/functions/csvkit:1.0
+          type: knative-workflow
+      x-direktiv-examples:
+        - title: Basic
+          content: |-
+            - id: csvkit
+              type: action
+              action:
+                function: csvkit
+                file: 
+                - key: data.xlsx
+                  scope: workflow
+                input: 
+                  convert: data.xlsx
+                  commands:
+                  - command: csvjson out/instance/out.csv
+        - title: Advanced
+          content: |-
+            - id: csvkit
+              type: action
+              action:
+                function: csvkit
+                file: 
+                - key: data.xlsx
+                  scope: workflow
+                input: 
+                  convert: data.xlsx
+                  commands:
+                  - command: csvcut -c 1 out/instance/out.csv
+      x-direktiv:  
+        cmds:
+        - action: exec
+          exec: |-
+            {{- if .Convert }}
+            bash -c 'in2csv {{ .Convert }} > out/instance/out.csv'
+            {{- else }}
+            echo ""
+            {{- end }}  
+        - action: foreach
+          loop: .Commands
+          exec: '{{ .Item.Command }}'
+          silent: '{{ .Item.Silent }}'
+          print: '{{ .Item.Print }}'
+          continue: '{{ .Item.Continue }}'
+        output: |
+          {
+            "csvkit": {{ index . 1 | toJson }}
+          }
+      x-direktiv-errors:
+        io.direktiv.command.error: Command execution failed
+        io.direktiv.output.error: Template error for output generation of the service
+        io.direktiv.ri.error: Can not create information object from request
+      responses:
+        200:
+          description: List of executed commands.
+          examples:
+            csvkit:
+            - result:
+              - Header1: Value1
+                Header2: Value2
+              success: true
+          schema:
+            type: object
+            properties:
+              csvkit:
+                type: array
+                items:
+                  type: object
+                  required:
+                  - success
+                  - result
+                  properties:
+                    success:
+                      type: boolean
+                    result:
+                      additionalProperties: {}
+        default:
+          description: generic error response
+          headers:
+            Direktiv-ErrorCode:
+              type: string
+            Direktiv-ErrorMessage:
+              type: string
+          schema:
+            $ref: "#/definitions/error"
+definitions:
+  direktivFile:
+    type: object
+    x-go-type:
+      type: DirektivFile
+      import:
+        package: github.com/direktiv/apps/go/pkg/apps 
+  error:
+    type: object
+    required:
+      - errorCode
+      - errorMessage
+    properties:
+      errorCode:
+        type: string
+      errorMessage:
+        type: string

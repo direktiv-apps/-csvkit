@@ -1,0 +1,23 @@
+url: ""
+functions:
+- type: knative-workflow
+  id: csvkit
+  image: gcr.io/direktiv/functions/csvkit:test
+states:
+- id: state0
+  type: action
+  action:
+    function: csvkit
+    input:
+      commands:
+      - command: csvjson out/instance/out.csv
+      convert: data.xlsx
+  transition: state1
+- id: state1
+  type: action
+  action:
+    function: csvkit
+    input:
+      commands:
+      - command: csvcut -c 1 out/instance/out.csv
+      convert: data.xlsx
